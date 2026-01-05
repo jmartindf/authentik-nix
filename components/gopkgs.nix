@@ -2,7 +2,7 @@
   authentik-src,
   authentik-version,
   authentikComponents,
-  buildGo124Module,
+  buildGo125Module,
   lib,
   makeWrapper,
   guacamole-server,
@@ -12,14 +12,15 @@
 let
   guacamoleAvailable = lib.meta.availableOn stdenv.hostPlatform guacamole-server;
 in
-buildGo124Module {
+buildGo125Module {
   pname = "authentik-gopkgs";
   version = authentik-version;
   prePatch = ''
     sed -i"" -e 's,./web/dist/,${authentikComponents.frontend}/dist/,' web/static.go
     sed -i"" -e 's,./web/dist/,${authentikComponents.frontend}/dist/,' internal/web/static.go
     sed -i"" -e 's,./lifecycle/gunicorn.conf.py,${authentikComponents.staticWorkdirDeps}/lifecycle/gunicorn.conf.py,' internal/gounicorn/gounicorn.go
-  '' + lib.optionalString guacamoleAvailable ''
+  ''
+  + lib.optionalString guacamoleAvailable ''
     substituteInPlace internal/outpost/rac/guacd.go \
       --replace-fail '/opt/guacamole/sbin/guacd' \
                      "${lib.getExe guacamole-server}"
@@ -50,7 +51,8 @@ buildGo124Module {
     "ldap"
     "proxy"
     "radius"
-  ] ++ lib.optionals guacamoleAvailable [
+  ]
+  ++ lib.optionals guacamoleAvailable [
     "rac"
   ];
   subPackages = [
@@ -58,7 +60,8 @@ buildGo124Module {
     "cmd/server"
     "cmd/proxy"
     "cmd/radius"
-  ] ++ lib.optionals guacamoleAvailable [
+  ]
+  ++ lib.optionals guacamoleAvailable [
     "cmd/rac"
   ];
   vendorHash = "sha256-m2shrCwoVdbtr8B83ZcAyG+J6dEys2xdjtlfFFF4CDo=";
@@ -72,7 +75,8 @@ buildGo124Module {
     mv $out/bin/ldap $ldap/bin/
     mv $out/bin/proxy $proxy/bin/
     mv $out/bin/radius $radius/bin/
-  '' + lib.optionalString guacamoleAvailable ''
+  ''
+  + lib.optionalString guacamoleAvailable ''
     mkdir -p $rac/bin
     mv $out/bin/rac $rac/bin/
   '';
