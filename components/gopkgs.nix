@@ -26,7 +26,8 @@ buildGo125Module {
     cp --no-preserve=mode -vr ${generatedGoClient} gen-go-api
     echo "replace goauthentik.io/api/v3 => ./gen-go-api" >>go.mod
     go mod edit -require=goauthentik.io/api/v3@v3.0.0
-  '' + lib.optionalString guacamoleAvailable ''
+  ''
+  + lib.optionalString guacamoleAvailable ''
     substituteInPlace internal/outpost/rac/guacd.go \
       --replace-fail '/opt/guacamole/sbin/guacd' \
                      "${lib.getExe guacamole-server}"
@@ -58,7 +59,8 @@ buildGo125Module {
     "ldap"
     "proxy"
     "radius"
-  ] ++ lib.optionals guacamoleAvailable [
+  ]
+  ++ lib.optionals guacamoleAvailable [
     "rac"
   ];
   subPackages = [
@@ -66,10 +68,11 @@ buildGo125Module {
     "cmd/server"
     "cmd/proxy"
     "cmd/radius"
-  ] ++ lib.optionals guacamoleAvailable [
+  ]
+  ++ lib.optionals guacamoleAvailable [
     "cmd/rac"
   ];
-  vendorHash = "sha256-8dCw7CBPboUhx/mNpD/ml6w4DsStDNEFkRtOagsDEgk=";
+  vendorHash = "sha256-Gf80rt86Qc6gg/ec8++U9uNW1KQEkwKt+CFN82KV1f8=";
   nativeBuildInputs = [ makeWrapper ];
   doCheck = false;
   postInstall = ''
@@ -80,7 +83,8 @@ buildGo125Module {
     mv $out/bin/ldap $ldap/bin/
     mv $out/bin/proxy $proxy/bin/
     mv $out/bin/radius $radius/bin/
-  '' + lib.optionalString guacamoleAvailable ''
+  ''
+  + lib.optionalString guacamoleAvailable ''
     mkdir -p $rac/bin
     mv $out/bin/rac $rac/bin/
   '';
